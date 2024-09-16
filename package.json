@@ -1,0 +1,42 @@
+{
+  "name": "work",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "^5.15.15",
+    "@mui/x-date-pickers": "^7.3.1",
+    "@mui/x-date-pickers-pro": "^7.3.1",
+    "@react-spring/web": "^9.7.3",
+    "axios": "^1.6.7",
+    "dayjs": "^1.11.11",
+    "i18next": "^23.11.4",
+    "i18next-browser-languagedetector": "^8.0.0",
+    "i18next-http-backend": "^2.5.2",
+    "js-cookie": "^3.0.5",
+    "next": "14.1.0",
+    "next-i18next": "^15.3.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-i18next": "^14.1.1",
+    "react-icons": "^5.0.1",
+    "sass": "^1.71.1"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5"
+  }
+}
