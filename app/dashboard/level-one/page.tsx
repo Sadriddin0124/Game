@@ -154,7 +154,7 @@ const LevelOne = () => {
       <audio controls ref={audioRef3} className='absolute top-0 opacity-0'>
         <source src="/audio/music4.mp3" type="audio/mpeg" />
       </audio>
-      <div className='max-w-[290px] md:max-w-[500px] bg-[#ffffff1f] backdrop-blur-sm mb-[20px] w-[100%] rounded-md flex gap-[10px] px-[10px] md:px-[20px] py-[10px]'>
+      <div className='max-w-[330px] md:max-w-[500px] bg-[#ffffff1f] backdrop-blur-sm mb-[20px] w-[100%] rounded-md flex gap-[10px] px-[10px] md:px-[20px] py-[10px]'>
         <button className='text-[30px] text-white' onClick={handlePlayBg}><IoVolumeHighSharp/></button>
         <button className='text-[30px] text-white' onClick={handlePauseBg}><MdVolumeOff/></button>
         <button className='text-[30px] text-white' onClick={resetGame}>Reset Game</button>
@@ -171,7 +171,7 @@ const LevelOne = () => {
             onClick={() => handleClick(item)}
             className={`${
               item.visible ? "rotateY" : ""
-            } shadow-md shadow-[blue] ease-linear duration-500 w-[60px] md:w-[100px] h-[60px] md:h-[100px] relative rounded-md overflow-hidden cursor-pointer ${
+            } shadow-md shadow-[blue] ease-linear duration-500 w-[70px] md:w-[100px] h-[70px] md:h-[100px] relative rounded-md overflow-hidden cursor-pointer ${
               item.status ? "opacity-50 pointer-events-none" : ""
             }`}
           >
