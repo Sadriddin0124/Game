@@ -7,8 +7,8 @@ import Link from 'next/link';
 const Menu: React.FC = () => {
   const links: Array<{ id: number, path: string, title: string }> = [
     { id: 1, path: "/dashboard/levels", title: "Start" },
-    { id: 2, path: "/settings", title: "Settings" },
-    { id: 3, path: "/quit", title: "Quit" },
+    { id: 2, path: "/", title: "Settings" },
+    { id: 3, path: "/", title: "Quit" },
   ];
   const audioRef = useRef<HTMLVideoElement | null>(null);
 
