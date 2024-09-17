@@ -10,7 +10,7 @@ const Levels = () => {
         {id: 2, title: "Level 2", path: "/dashboard/levels/two", available: true},
         {id: 3, title: "Level 3", path: "/dashboard/levels/three", available: true},
         {id: 4, title: "Level 4", path: "/dashboard/levels/four", available: true},
-        {id: 5, title: "Level 5", path: "/dashboard/levels/five", available: false},
+        {id: 5, title: "Level 5", path: "/dashboard/levels/five", available: true},
         {id: 6, title: "Level 6", path: "/dashboard/levels/six", available: false},
         {id: 7, title: "Level 7", path: "/dashboard/levels/seven", available: false},
         {id: 8, title: "Level 8", path: "/dashboard/levels/eight", available: false},
