@@ -52,6 +52,7 @@ const LevelOne = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioRef2 = useRef<HTMLAudioElement | null>(null);
   const audioRef3 = useRef<HTMLAudioElement | null>(null);
+  const audioRef4 = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (matchedPairs === Data.length / 2) {
@@ -101,6 +102,7 @@ const LevelOne = () => {
       setTimeout(() => {
         if (item.cat === cat) {
           // Match found
+          handlePlaySuccess()
           setItems((prevItems) =>
             prevItems.map((el) =>
               el.cat === cat ? { ...el, status: true, visible: true } : el
@@ -133,6 +135,13 @@ const LevelOne = () => {
       });
     }
   }
+  const handlePlaySuccess = () => {
+    if (audioRef4.current) {
+      audioRef4.current.play().catch((error) => {
+        console.log('Autoplay blocked by browser:', error);
+      });
+    }
+  }
   const resetGame = () => {
     setItems(Data.map(item => ({ ...item, status: false, visible: false }))); // Reset all item statuses and visibility
     setCat("");
@@ -153,6 +162,9 @@ const LevelOne = () => {
       </audio>
       <audio controls ref={audioRef3} className='absolute top-0 opacity-0'>
         <source src="/audio/music4.mp3" type="audio/mpeg" />
+      </audio>
+      <audio controls ref={audioRef4} className='absolute top-0 opacity-0'>
+        <source src="/audio/success.mp3" type="audio/mpeg" />
       </audio>
       <div className='max-w-[330px] md:max-w-[500px] bg-[#ffffff1f] backdrop-blur-sm mb-[20px] w-[100%] rounded-md flex gap-[10px] px-[10px] md:px-[20px] py-[10px]'>
         <button className='text-[30px] text-white' onClick={handlePlayBg}><IoVolumeHighSharp/></button>
