@@ -200,7 +200,7 @@ const LevelOne = () => {
       </div>
       {gameCompleted &&
         (matchedPairs === Data.length / 2 ? (
-          <div className="fixed w-[100%] px-[20px] h-[100vh] left-0 top-0 flex justify-center items-center z-40 bg-[#00000074] text-white p-5 rounded-md mx-[20px]">
+          <div className="fixed w-[100%] px-[20px] h-[100vh] left-0 top-0 flex justify-center items-center z-40 bg-[#00000074] text-white">
             <div className="max-w-[400px] w-[100%] p-[20px] flex flex-col gap-[20px] bg-white">
               <h2 className="text-green-500 text-[20px] text-center">
                 Congratulations! You've completed the game in {attempts}{" "}
@@ -223,7 +223,7 @@ const LevelOne = () => {
             </div>
           </div>
         ) : (
-          <div className="fixed w-[100%] px-[20px] h-[100vh] left-0 top-0 flex justify-center items-center z-40 bg-[#00000074] text-white p-5 rounded-md mx-[20px]">
+          <div className="fixed w-[100%] px-[20px] h-[100vh] left-0 top-0 flex justify-center items-center z-40 bg-[#00000074] text-white">
             <div className="max-w-[400px] w-[100%] p-[20px] flex flex-col gap-[20px] bg-white">
               <h2 className="text-red-500 text-[20px] text-center">
                 Game Over
