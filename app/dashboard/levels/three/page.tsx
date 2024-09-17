@@ -46,7 +46,7 @@ const LevelOne = () => {
     { id: 14, img: Img10, cat: "bird10", status: false, visible: false },
     { id: 15, img: Img3, cat: "bird3", status: false, visible: false },
     { id: 16, img: Img1, cat: "bird1", status: false, visible: false },
-    { id: 17, img: Img10, cat: "bird10", status: false, visible: false },
+    { id: 17, img: Img9, cat: "bird9", status: false, visible: false },
     { id: 18, img: Img2, cat: "bird2", status: false, visible: false },
     { id: 19, img: Img4, cat: "bird4", status: false, visible: false },
     { id: 20, img: Img6, cat: "bird6", status: false, visible: false },
