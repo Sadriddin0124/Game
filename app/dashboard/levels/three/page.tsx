@@ -16,9 +16,10 @@ import Phoenix from "@/assets/phoenix.jpg";
 import { IoVolumeHighSharp } from "react-icons/io5";
 import { MdHomeFilled, MdVolumeOff } from "react-icons/md";
 import { IoReload } from "react-icons/io5";
-import { PlayMusic } from "@/app/ui/Play/Play";
+import { PauseMusic, PlayMusic } from "@/app/ui/Play/Play";
 import Link from "next/link";
 import Timer from "@/app/ui/Timer/Timer";
+import { HiMiniBars3 } from "react-icons/hi2";
 
 type LevelType = {
   id: number;
@@ -72,25 +73,15 @@ const LevelOne = () => {
   }, [matchedPairs]);
 
   const handlePlay = () => {
-    if (audioRef.current) {
-      audioRef.current.play().catch((error) => {
-        console.log("Autoplay blocked by browser:", error);
-      });
-    }
+    PlayMusic(audioRef)
   };
 
   const handlePlayBg = () => {
-    if (audioRef2.current) {
-      audioRef2.current.play().catch((error) => {
-        console.log("Autoplay blocked by browser:", error);
-      });
-    }
+    PlayMusic(audioRef2)
   };
 
   const handlePauseBg = () => {
-    if (audioRef2.current) {
-      audioRef2.current.pause();
-    }
+    PauseMusic(audioRef2)
   };
 
   const handleClick = (item: LevelType) => {
@@ -141,18 +132,10 @@ const LevelOne = () => {
     handlePlay();
   };
   const handlePlayDisMatch = () => {
-    if (audioRef3.current) {
-      audioRef3.current.play().catch((error) => {
-        console.log("Autoplay blocked by browser:", error);
-      });
-    }
+    PlayMusic(audioRef3)
   };
   const handlePlaySuccess = () => {
-    if (audioRef4.current) {
-      audioRef4.current.play().catch((error) => {
-        console.log("Autoplay blocked by browser:", error);
-      });
-    }
+    PlayMusic(audioRef4)
   };
   const resetGame = () => {
     setItems(Data.map((item) => ({ ...item, status: false, visible: false }))); // Reset all item statuses and visibility
@@ -161,8 +144,10 @@ const LevelOne = () => {
     setAttempts(0);
     setMatchedPairs(0);
     setGameCompleted(false);
+    setTimerStatus(true)
   };
-
+  const [timerStatus, setTimerStatus] = useState(true)
+  const GameOver = useRef<HTMLAudioElement | null>(null);
   return (
     <div className="relative w-[100%] h-[100vh] flex flex-col justify-center items-center">
       <Image
@@ -187,6 +172,9 @@ const LevelOne = () => {
       <audio controls ref={audioRef5} className="absolute top-0 opacity-0">
         <source src="/audio/completed.mp3" type="audio/mpeg" />
       </audio>
+      <audio controls ref={GameOver} className="absolute top-0 opacity-0">
+        <source src="/audio/gameover.mp3" type="audio/mpeg" />
+      </audio>
       <div className="max-w-[330px] mt-[35px] md:max-w-[620px] bg-[#ffffff1f] backdrop-blur-sm mb-[20px] w-[100%] rounded-md justify-between items-center flex gap-[10px] px-[10px] md:px-[20px] py-[10px]">
         <div className="flex gap-[10px]">
           <button className="text-[30px] text-white" onClick={handlePlayBg}>
@@ -196,12 +184,12 @@ const LevelOne = () => {
             <MdVolumeOff />
           </button>
         </div>
-        <Timer setGameCompleted={setGameCompleted} />
+        <Timer setGameCompleted={setGameCompleted} GameOver={GameOver} timerStatus={timerStatus} setTimerStatus={setTimerStatus} setDuration={1}/>
         <div className="flex items-center gap-[10px]">
             <button className="text-[30px] text-white" onClick={resetGame}>
                 <IoReload />
             </button>
-            <Link href={"/dashboard/levels"} className="text-[30px] text-white">
+            <Link href={"/"} className="text-[30px] text-white">
                 <MdHomeFilled />
             </Link>
         </div>
@@ -216,10 +204,16 @@ const LevelOne = () => {
               </h2>
               <div className="w-[100%] flex justify-center gap-[10px]">
                 <Link
-                  href={"/dashboard/levels"}
+                  href={"/"}
                   className="text-[30px] text-green-400 px-[20px] py-[10px] border rounded-md"
                 >
                   <MdHomeFilled />
+                </Link>
+                <Link
+                  href={"/dashboard/levels"}
+                  className="text-[30px] text-green-400 px-[20px] py-[10px] border rounded-md"
+                >
+                  <HiMiniBars3 />
                 </Link>
                 <button
                   className="text-[30px] text-green-400 px-[20px] py-[10px] border rounded-md"
@@ -238,10 +232,16 @@ const LevelOne = () => {
               </h2>
               <div className="w-[100%] flex justify-center gap-[10px]">
                 <Link
-                  href={"/dashboard/levels"}
+                  href={"/"}
                   className="text-[30px] text-red-500 px-[20px] py-[10px] border rounded-md"
                 >
                   <MdHomeFilled />
+                </Link>
+                <Link
+                  href={"/dashboard/levels"}
+                  className="text-[30px] text-red-500 px-[20px] py-[10px] border rounded-md"
+                >
+                  <HiMiniBars3 />
                 </Link>
                 <button
                   className="text-[30px] text-red-500 px-[20px] py-[10px] border rounded-md"
