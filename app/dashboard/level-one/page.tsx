@@ -180,7 +180,7 @@ const LevelOne = () => {
               alt={item.cat}
               width={1000}
               height={1000}
-              className={`absolute rounded-md left-[10%] top-[10%] w-[80%] h-[80%] object-cover`}
+              className={`absolute rotateY rounded-md left-[10%] top-[10%] w-[80%] h-[80%] object-cover`}
             />
             <div
               className={`absolute top-0 z-20 left-0 w-[100%] h-[100%] bg-white flex justify-center items-center text-gray-500 rounded-md ${
