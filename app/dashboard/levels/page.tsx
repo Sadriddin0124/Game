@@ -13,7 +13,11 @@ const Levels = () => {
         {id: 5, title: "Level 5", path: "/dashboard/levels/five", available: true},
         {id: 6, title: "Level 6", path: "/dashboard/levels/six", available: true},
         {id: 7, title: "Level 7", path: "/dashboard/levels/seven", available: true},
-        {id: 8, title: "Level 8", path: "/dashboard/levels/eight", available: false},
+        {id: 8, title: "Level 8", path: "/dashboard/levels/eight", available: true},
+        {id: 9, title: "Level 9", path: "/dashboard/levels", available: false},
+        {id: 10, title: "Level 10", path: "/dashboard/levels", available: false},
+        {id: 11, title: "Level 11", path: "/dashboard/levels", available: false},
+        {id: 12, title: "Level 12", path: "/dashboard/levels", available: false},
     ]
     const audioRef = useRef<HTMLVideoElement | null>(null);
     const playM = () => {
@@ -25,7 +29,7 @@ const Levels = () => {
         <audio controls ref={audioRef} className='absolute top-0 opacity-0'>
             <source src="/audio/music.mp3" type="audio/mpeg" />
         </audio>
-        <div className='max-w-[300px] w-[100%] gap-[10px] md:gap-[20px] bg-[#ffffff1f] rounded-md p-[10px] md:p-[20px] backdrop-blur-sm'>
+        <div className='max-w-[300px] w-[100%] max-h-[500px] overflow-y-auto no-scroll gap-[10px] md:gap-[20px] bg-[#ffffff1f] rounded-md p-[10px] md:p-[20px] backdrop-blur-sm'>
             <ul className='flex flex-col gap-[10px] w-[100%]'>
                 {
                     levels?.map((item,index)=> {

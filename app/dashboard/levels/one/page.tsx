@@ -1,52 +1,20 @@
 "use client";
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import React, { useRef, useState, useEffect } from 'react';
 import BG from "@/assets/level2.jpg";
-import Img1 from "@/assets/level1/bmw.png";
-import Img2 from "@/assets/level1/bugatti.jpg";
-import Img3 from "@/assets/level1/chevrolet.jpg";
-import Img4 from "@/assets/level1/dodge.webp";
-import Img5 from "@/assets/level1/mers.jpg";
-import Img6 from "@/assets/level1/mclaren.svg";
-import Img7 from "@/assets/level1/toyota.jpg";
-import Img8 from "@/assets/level1/lambo.jpg";
 import Phoenix from "@/assets/phoenix.jpg";
 import { IoVolumeHighSharp } from "react-icons/io5";
 import { MdHomeFilled, MdVolumeOff } from "react-icons/md";
 import { IoReload } from "react-icons/io5";
 import Link from 'next/link';
-import Timer from '@/app/ui/Timer/Timer';
 import { PauseMusic, PlayMusic } from '@/app/ui/Play/Play';
-import { HiMiniBars3 } from "react-icons/hi2";
-
-type LevelType = {
-  id: number;
-  img: StaticImageData;
-  cat: string;
-  status: boolean;
-  visible: boolean;  // New property for controlling visibility
-};
-
+import { Items, LevelType } from '@/app/data/level1';
+import GameSuccess from '@/app/ui/GameSuccess/GameSuccess';
+import GameFail from '@/app/ui/GameFail/GameFail';
+import Audios from '@/app/ui/Audios/Audios';
+import PlayButton from '@/components/PlayButton/PlayButton';
 const LevelOne = () => {
-  const Data: LevelType[] = [
-    { id: 1, img: Img1, cat: "bmw", status: false, visible: false },
-    { id: 2, img: Img7, cat: "toyota", status: false, visible: false },
-    { id: 3, img: Img6, cat: "mclaren", status: false, visible: false },
-    { id: 4, img: Img5, cat: "mers", status: false, visible: false },
-    { id: 5, img: Img3, cat: "chevrolet", status: false, visible: false },
-    { id: 6, img: Img5, cat: "mers", status: false, visible: false },
-    { id: 7, img: Img7, cat: "toyota", status: false, visible: false },
-    { id: 8, img: Img2, cat: "bugatti", status: false, visible: false },
-    { id: 9, img: Img3, cat: "chevrolet", status: false, visible: false },
-    { id: 10, img: Img8, cat: "lambo", status: false, visible: false },
-    { id: 11, img: Img4, cat: "dodge", status: false, visible: false },
-    { id: 12, img: Img2, cat: "bugatti", status: false, visible: false },
-    { id: 13, img: Img6, cat: "mclaren", status: false, visible: false },
-    { id: 14, img: Img4, cat: "dodge", status: false, visible: false },
-    { id: 15, img: Img8, cat: "lambo", status: false, visible: false },
-    { id: 16, img: Img1, cat: "bmw", status: false, visible: false },
-  ];
-
+  const Data: LevelType[] = Items
   const [items, setItems] = useState<LevelType[]>(Data);
   const [activeItem, setActiveItem] = useState<number | null>(null);
   const [cat, setCat] = useState<string>("");
@@ -54,43 +22,39 @@ const LevelOne = () => {
   const [matchedPairs, setMatchedPairs] = useState<number>(0);
   const [gameCompleted, setGameCompleted] = useState<boolean>(false);
   const [isChecking, setIsChecking] = useState<boolean>(false); // Prevent double-clicking during checking
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioRef2 = useRef<HTMLAudioElement | null>(null);
-  const audioRef3 = useRef<HTMLAudioElement | null>(null);
-  const audioRef4 = useRef<HTMLAudioElement | null>(null);
-  const audioRef5 = useRef<HTMLAudioElement | null>(null);
+  const SelectSound = useRef<HTMLAudioElement | null>(null);
+  const BackgroundMusic = useRef<HTMLAudioElement | null>(null);
+  const ErrorSound = useRef<HTMLAudioElement | null>(null);
+  const Success = useRef<HTMLAudioElement | null>(null);
   const Completed = useRef<HTMLAudioElement | null>(null);
   const GameOver = useRef<HTMLAudioElement | null>(null);
-
+  const refs = [SelectSound, ErrorSound, Success, Completed, GameOver]
   useEffect(() => {
     if (matchedPairs === Data.length / 2) {
       setGameCompleted(true);
-    }
-    if (matchedPairs === 8) {
       PlayMusic(Completed);
+      stopTimer()
     }
   }, [matchedPairs]);
 
   const handlePlay = () => {
-    PlayMusic(audioRef)
+    PlayMusic(SelectSound)
   };
 
   const handlePlayBg = () => {
-    PlayMusic(audioRef2)
+    PlayMusic(BackgroundMusic)
   };
 
   const handlePauseBg = () => {
-    PauseMusic(audioRef2)
+    PauseMusic(BackgroundMusic)
   };
 
   const handleClick = (item: LevelType) => {
     if (isChecking || item.status || item.visible) return; // Block click if in checking phase or item is already matched
-
     setAttempts(attempts + 1);
     setItems((prevItems) =>
       prevItems.map((el) => (el.id === item.id ? { ...el, visible: true } : el))
     );
-
     if (cat === "") {
       // First selection
       setCat(item.cat);
@@ -128,21 +92,55 @@ const LevelOne = () => {
     handlePlay();
   };
   const handlePlayDisMatch = () => {
-    PlayMusic(audioRef3)
+    PlayMusic(ErrorSound)
   };
   const handlePlaySuccess = () => {
-    PlayMusic(audioRef4)
+    PlayMusic(Success)
   };
   const resetGame = () => {
+    stopTimer()
     setItems(Data.map((item) => ({ ...item, status: false, visible: false }))); // Reset all item statuses and visibility
     setCat("");
     setActiveItem(null);
     setAttempts(0);
     setMatchedPairs(0);
     setGameCompleted(false);
-    setTimerStatus(true)
+    TimerFn()
   };
-  const [timerStatus, setTimerStatus] = useState(true)
+  const [start, setStart] = useState(true)
+  const StartGame = () => {
+    setStart(!start)
+    TimerFn()
+  }
+  const [minutes, setMinutes] = useState<string>('00');
+  const [seconds, setSeconds] = useState<string>('00');
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);  // Interval ID saqlash uchun
+    let timer = 60 * .6; // Timerning boshlang'ich qiymati
+    const TimerFn = () => {
+        intervalRef.current = setInterval(() => {
+            const min = Math.floor(timer / 60).toString().padStart(2, '0');
+            const sec = (timer % 60).toString().padStart(2, '0');
+            setMinutes(min);
+            setSeconds(sec);
+            
+            if (--timer < 0) {
+                clearInterval(intervalRef.current!);  // Intervalni to'xtatish
+                setGameCompleted(true);
+                setStart(false);
+                PlayMusic(GameOver)
+            }
+        }, 1000);
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current); // Komponent o'chirilganda tozalash
+            }
+        };
+    }
+  const stopTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current); // Intervalni to'xtatish
+    }
+  };
   return (
     <div className="relative w-[100%] h-[100vh] flex flex-col justify-center items-center">
       <Image
@@ -152,24 +150,11 @@ const LevelOne = () => {
         height={10000}
         className="w-[100%] h-[100%] object-cover absolute z-[-1] brightness-75"
       />
-      <audio controls ref={audioRef} className="absolute top-0 opacity-0">
-        <source src="/audio/music2.mp3" type="audio/mpeg" />
-      </audio>
-      <audio controls ref={audioRef2} className="absolute top-0 opacity-0">
+      {start && <PlayButton StartGame={StartGame}/>}
+      <audio controls ref={BackgroundMusic} className="absolute top-0 opacity-0">
         <source src="/audio/music3.mp3" type="audio/mpeg" />
       </audio>
-      <audio controls ref={audioRef3} className="absolute top-0 opacity-0">
-        <source src="/audio/music4.mp3" type="audio/mpeg" />
-      </audio>
-      <audio controls ref={audioRef4} className="absolute top-0 opacity-0">
-        <source src="/audio/success.mp3" type="audio/mpeg" />
-      </audio>
-      <audio controls ref={audioRef5} className="absolute top-0 opacity-0">
-        <source src="/audio/completed.mp3" type="audio/mpeg" />
-      </audio>
-      <audio controls ref={GameOver} className="absolute top-0 opacity-0">
-        <source src="/audio/gameover.mp3" type="audio/mpeg" />
-      </audio>
+      <Audios refs={refs}/>
       <div className="max-w-[330px] mt-[35px] md:max-w-[500px] bg-[#ffffff1f] backdrop-blur-sm mb-[20px] w-[100%] rounded-md justify-between items-center flex gap-[10px] px-[10px] md:px-[20px] py-[10px]">
         <div className="flex gap-[10px]">
           <button className="text-[30px] text-white" onClick={handlePlayBg}>
@@ -179,7 +164,7 @@ const LevelOne = () => {
             <MdVolumeOff />
           </button>
         </div>
-        <Timer setGameCompleted={setGameCompleted} GameOver={GameOver} timerStatus={timerStatus} setTimerStatus={setTimerStatus} setDuration={.6}/>
+        <h1 className='text-white text-[20px]'>{minutes}:{seconds}</h1>
         <div className="flex items-center gap-[10px]">
             <button className="text-[30px] text-white" onClick={resetGame}>
                 <IoReload />
@@ -191,62 +176,9 @@ const LevelOne = () => {
       </div>
       {gameCompleted &&
         (matchedPairs === Data.length / 2 ? (
-          <div className="fixed w-[100%] px-[20px] h-[100vh] left-0 top-0 flex justify-center items-center z-40 bg-[#00000074] text-white">
-            <div className="max-w-[400px] w-[100%] p-[20px] flex flex-col gap-[20px] bg-white">
-              <h2 className="text-green-500 text-[20px] text-center">
-                Congratulations! You've completed the game in {attempts}{" "}
-                attempts!
-              </h2>
-              <div className="w-[100%] flex justify-center gap-[10px]">
-                <Link
-                  href={"/"}
-                  className="text-[30px] text-green-400 px-[20px] py-[10px] border rounded-md"
-                >
-                  <MdHomeFilled />
-                </Link>
-                <Link
-                  href={"/dashboard/levels"}
-                  className="text-[30px] text-green-400 px-[20px] py-[10px] border rounded-md"
-                >
-                  <HiMiniBars3 />
-                </Link>
-                <button
-                  className="text-[30px] text-green-400 px-[20px] py-[10px] border rounded-md"
-                  onClick={resetGame}
-                >
-                  <IoReload />
-                </button>
-              </div>
-            </div>
-          </div>
+          <GameSuccess attempts={attempts} resetGame={resetGame} path="two"/>
         ) : (
-          <div className="fixed w-[100%] px-[20px] h-[100vh] left-0 top-0 flex justify-center items-center z-40 bg-[#00000074] text-white">
-            <div className="max-w-[400px] w-[100%] p-[20px] flex flex-col gap-[20px] bg-white">
-              <h2 className="text-red-500 text-[20px] text-center">
-                Game Over
-              </h2>
-              <div className="w-[100%] flex justify-center gap-[10px]">
-                <Link
-                  href={"/"}
-                  className="text-[30px] text-red-500 px-[20px] py-[10px] border rounded-md"
-                >
-                  <MdHomeFilled />
-                </Link>
-                <Link
-                  href={"/dashboard/levels"}
-                  className="text-[30px] text-red-500 px-[20px] py-[10px] border rounded-md"
-                >
-                  <HiMiniBars3 />
-                </Link>
-                <button
-                  className="text-[30px] text-red-500 px-[20px] py-[10px] border rounded-md"
-                  onClick={resetGame}
-                >
-                  <IoReload />
-                </button>
-              </div>
-            </div>
-          </div>
+          <GameFail attempts={attempts} resetGame={resetGame}/>
         ))}
       <div className="gap-[10px] md:gap-[20px] bg-[#ffffff1f] rounded-md p-[10px] md:p-[20px] backdrop-blur-sm grid grid-cols-4">
         {items.map((item) => (
@@ -255,7 +187,7 @@ const LevelOne = () => {
             onClick={() => handleClick(item)}
             className={`${
               item.visible ? "rotateY" : ""
-            } shadow_blue ease-linear duration-500 w-[70px] md:w-[100px] h-[70px] md:h-[100px] relative rounded-md overflow-hidden cursor-pointer ${
+            } shadow_orange ease-linear duration-500 w-[70px] md:w-[100px] h-[70px] md:h-[100px] relative rounded-md overflow-hidden cursor-pointer ${
               item.status ? "opacity-50 pointer-events-none" : ""
             }`}
           >

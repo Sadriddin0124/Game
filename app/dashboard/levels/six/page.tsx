@@ -23,8 +23,10 @@ import { MdHomeFilled, MdVolumeOff } from "react-icons/md";
 import { IoReload } from "react-icons/io5";
 import { PauseMusic, PlayMusic } from "@/app/ui/Play/Play";
 import Link from "next/link";
-import Timer from "@/app/ui/Timer/Timer";
-import { HiMiniBars3 } from "react-icons/hi2";
+import PlayButton from "@/components/PlayButton/PlayButton";
+import Audios from "@/app/ui/Audios/Audios";
+import GameSuccess from "@/app/ui/GameSuccess/GameSuccess";
+import GameFail from "@/app/ui/GameFail/GameFail";
 
 type LevelType = {
   id: number;
@@ -67,7 +69,6 @@ const LevelOne = () => {
     { id: 29, img: Img2, cat: "Bleach2", status: false, visible: false },
     { id: 30, img: Img6, cat: "Bleach6", status: false, visible: false },
   ];
-
   const [items, setItems] = useState<LevelType[]>(Data);
   const [activeItem, setActiveItem] = useState<number | null>(null);
   const [cat, setCat] = useState<string>("");
@@ -75,38 +76,39 @@ const LevelOne = () => {
   const [matchedPairs, setMatchedPairs] = useState<number>(0);
   const [gameCompleted, setGameCompleted] = useState<boolean>(false);
   const [isChecking, setIsChecking] = useState<boolean>(false); // Prevent double-clicking during checking
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioRef2 = useRef<HTMLAudioElement | null>(null);
-  const audioRef3 = useRef<HTMLAudioElement | null>(null);
-  const audioRef4 = useRef<HTMLAudioElement | null>(null);
-  const audioRef5 = useRef<HTMLAudioElement | null>(null);
-
+  const SelectSound = useRef<HTMLAudioElement | null>(null);
+  const BackgroundMusic = useRef<HTMLAudioElement | null>(null);
+  const ErrorSound = useRef<HTMLAudioElement | null>(null);
+  const Success = useRef<HTMLAudioElement | null>(null);
+  const Completed = useRef<HTMLAudioElement | null>(null);
+  const GameOver = useRef<HTMLAudioElement | null>(null);
+  const refs = [SelectSound, ErrorSound, Success, Completed, GameOver]
   useEffect(() => {
     if (matchedPairs === Data.length / 2) {
       setGameCompleted(true);
+      PlayMusic(Completed);
+      stopTimer()
     }
   }, [matchedPairs]);
 
   const handlePlay = () => {
-    PlayMusic(audioRef)
+    PlayMusic(SelectSound)
   };
 
   const handlePlayBg = () => {
-    PlayMusic(audioRef2)
+    PlayMusic(BackgroundMusic)
   };
 
   const handlePauseBg = () => {
-    PauseMusic(audioRef2)
+    PauseMusic(BackgroundMusic)
   };
 
   const handleClick = (item: LevelType) => {
     if (isChecking || item.status || item.visible) return; // Block click if in checking phase or item is already matched
-
     setAttempts(attempts + 1);
     setItems((prevItems) =>
       prevItems.map((el) => (el.id === item.id ? { ...el, visible: true } : el))
     );
-
     if (cat === "") {
       // First selection
       setCat(item.cat);
@@ -124,9 +126,6 @@ const LevelOne = () => {
             )
           );
           setMatchedPairs(matchedPairs + 1);
-          if (matchedPairs === Data.length / 2) {
-            PlayMusic(audioRef5);
-          }
         } else {
           // Mismatch, hide both items after a short delay
           handlePlayDisMatch();
@@ -147,22 +146,55 @@ const LevelOne = () => {
     handlePlay();
   };
   const handlePlayDisMatch = () => {
-    PlayMusic(audioRef3)
+    PlayMusic(ErrorSound)
   };
   const handlePlaySuccess = () => {
-    PlayMusic(audioRef4)
+    PlayMusic(Success)
   };
   const resetGame = () => {
+    stopTimer()
     setItems(Data.map((item) => ({ ...item, status: false, visible: false }))); // Reset all item statuses and visibility
     setCat("");
     setActiveItem(null);
     setAttempts(0);
     setMatchedPairs(0);
     setGameCompleted(false);
-    setTimerStatus(true)
+    TimerFn()
   };
-  const [timerStatus, setTimerStatus] = useState(true)
-  const GameOver = useRef<HTMLAudioElement | null>(null);
+  const [start, setStart] = useState(true)
+  const StartGame = () => {
+    setStart(!start)
+    TimerFn()
+  }
+  const [minutes, setMinutes] = useState<string>('00');
+  const [seconds, setSeconds] = useState<string>('00');
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);  // Interval ID saqlash uchun
+    let timer = 60 * 1.5; // Timerning boshlang'ich qiymati
+    const TimerFn = () => {
+        intervalRef.current = setInterval(() => {
+            const min = Math.floor(timer / 60).toString().padStart(2, '0');
+            const sec = (timer % 60).toString().padStart(2, '0');
+            setMinutes(min);
+            setSeconds(sec);
+            
+            if (--timer < 0) {
+                clearInterval(intervalRef.current!);  // Intervalni to'xtatish
+                setGameCompleted(true);
+                setStart(false);
+                PlayMusic(GameOver)
+            }
+        }, 1000);
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current); // Komponent o'chirilganda tozalash
+            }
+        };
+    }
+  const stopTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current); // Intervalni to'xtatish
+    }
+  };
   return (
     <div className="relative w-[100%] min-h-[100vh] flex flex-col justify-center items-center">
       <Image
@@ -172,24 +204,11 @@ const LevelOne = () => {
         height={10000}
         className="w-[100%] h-[100%] object-cover absolute z-[-1] brightness-75"
       />
-      <audio controls ref={audioRef} className="absolute top-0 opacity-0">
-        <source src="/audio/music2.mp3" type="audio/mpeg" />
-      </audio>
-      <audio controls ref={audioRef2} className="absolute top-0 opacity-0">
+      {start && <PlayButton StartGame={StartGame}/>}
+      <audio controls ref={BackgroundMusic} className="absolute top-0 opacity-0">
         <source src="/audio/Bleach.m4a" type="audio/mpeg" />
       </audio>
-      <audio controls ref={audioRef3} className="absolute top-0 opacity-0">
-        <source src="/audio/music4.mp3" type="audio/mpeg" />
-      </audio>
-      <audio controls ref={audioRef4} className="absolute top-0 opacity-0">
-        <source src="/audio/success.mp3" type="audio/mpeg" />
-      </audio>
-      <audio controls ref={audioRef5} className="absolute top-0 opacity-0">
-        <source src="/audio/completed.mp3" type="audio/mpeg" />
-      </audio>
-      <audio controls ref={GameOver} className="absolute top-0 opacity-0">
-        <source src="/audio/gameover.mp3" type="audio/mpeg" />
-      </audio>
+      <Audios refs={refs}/>
       <div className="max-w-[310px] mt-[35px] md:max-w-[620px] bg-[#ffffff1f] backdrop-blur-sm mb-[20px] w-[100%] rounded-md justify-between items-center flex gap-[10px] px-[10px] md:px-[20px] py-[10px]">
         <div className="flex gap-[10px]">
           <button className="text-[30px] text-white" onClick={handlePlayBg}>
@@ -199,7 +218,7 @@ const LevelOne = () => {
             <MdVolumeOff />
           </button>
         </div>
-        <Timer setGameCompleted={setGameCompleted} GameOver={GameOver} timerStatus={timerStatus} setTimerStatus={setTimerStatus} setDuration={1.5}/>
+        <h1 className='text-white text-[20px]'>{minutes}:{seconds}</h1>
         <div className="flex items-center gap-[10px]">
             <button className="text-[30px] text-white" onClick={resetGame}>
                 <IoReload />
@@ -211,62 +230,9 @@ const LevelOne = () => {
       </div>
       {gameCompleted &&
         (matchedPairs === Data.length / 2 ? (
-          <div className="fixed w-[100%] px-[20px] h-[100vh] left-0 top-0 flex justify-center items-center z-40 bg-[#00000074] text-white">
-            <div className="max-w-[400px] w-[100%] p-[20px] flex flex-col gap-[20px] bg-white">
-              <h2 className="text-green-500 text-[20px] text-center">
-                Congratulations! You've completed the game in {attempts}{" "}
-                attempts!
-              </h2>
-              <div className="w-[100%] flex justify-center gap-[10px]">
-                <Link
-                  href={"/"}
-                  className="text-[30px] text-green-400 px-[20px] py-[10px] border rounded-md"
-                >
-                  <MdHomeFilled />
-                </Link>
-                <Link
-                  href={"/dashboard/levels"}
-                  className="text-[30px] text-green-400 px-[20px] py-[10px] border rounded-md"
-                >
-                  <HiMiniBars3 />
-                </Link>
-                <button
-                  className="text-[30px] text-green-400 px-[20px] py-[10px] border rounded-md"
-                  onClick={resetGame}
-                >
-                  <IoReload />
-                </button>
-              </div>
-            </div>
-          </div>
+          <GameSuccess attempts={attempts} resetGame={resetGame} path="seven"/>
         ) : (
-          <div className="fixed w-[100%] px-[20px] h-[100vh] left-0 top-0 flex justify-center items-center z-40 bg-[#00000074] text-white">
-            <div className="max-w-[400px] w-[100%] p-[20px] flex flex-col gap-[20px] bg-white">
-              <h2 className="text-red-500 text-[20px] text-center">
-                Game Over
-              </h2>
-              <div className="w-[100%] flex justify-center gap-[10px]">
-                <Link
-                  href={"/"}
-                  className="text-[30px] text-red-500 px-[20px] py-[10px] border rounded-md"
-                >
-                  <MdHomeFilled />
-                </Link>
-                <Link
-                  href={"/dashboard/levels"}
-                  className="text-[30px] text-red-500 px-[20px] py-[10px] border rounded-md"
-                >
-                  <HiMiniBars3 />
-                </Link>
-                <button
-                  className="text-[30px] text-red-500 px-[20px] py-[10px] border rounded-md"
-                  onClick={resetGame}
-                >
-                  <IoReload />
-                </button>
-              </div>
-            </div>
-          </div>
+          <GameFail attempts={attempts} resetGame={resetGame}/>
         ))}
       <div className="gap-[10px] md:gap-[20px] bg-[#ffffff1f] rounded-md p-[10px] md:p-[20px] backdrop-blur-sm grid grid-cols-5 md:grid-cols-6">
         {items.map((item) => (

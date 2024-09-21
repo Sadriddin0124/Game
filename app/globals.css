@@ -51,22 +51,11 @@
   display: none;
 }
 
-.shadow_green {
-  box-shadow: 0 0 10px green,
-  0 0 20px green;
-}
-
-.shadow_red {
-  box-shadow: 0 0 10px red,
-  0 0 20px red;
-}
-
-.shadow_blue {
-  box-shadow: 0 0 10px blue,
-  0 0 20px blue;
-}
-
 .shadow_orange {
   box-shadow: 0 0 10px orange,
   0 0 20px orange;
+}
+
+.no-scroll {
+  scrollbar-width: none;
 }

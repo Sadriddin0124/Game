@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Dispatch, SetStateAction, MutableRefObject } from 'react';
 import { PlayMusic } from '../Play/Play';
 
-const Timer = ({setGameCompleted, GameOver, timerStatus, setTimerStatus, setDuration}: {setDuration: number;setGameCompleted: Dispatch<SetStateAction<boolean>>; setTimerStatus: Dispatch<SetStateAction<boolean>>; GameOver: MutableRefObject<HTMLAudioElement | null>; timerStatus: boolean}) => {
+const Timer = ({gameCompleted, setGameCompleted, GameOver, timerStatus, setTimerStatus, setDuration, setStart}: {gameCompleted: boolean; setDuration: number; setGameCompleted: Dispatch<SetStateAction<boolean>>; setStart: Dispatch<SetStateAction<boolean>>; setTimerStatus: Dispatch<SetStateAction<boolean>>; GameOver: MutableRefObject<HTMLAudioElement | null>; timerStatus: boolean}) => {
     const [minutes, setMinutes] = useState<string>('00');
     const [seconds, setSeconds] = useState<string>('00');
 
@@ -20,16 +20,20 @@ const Timer = ({setGameCompleted, GameOver, timerStatus, setTimerStatus, setDura
                 if (--timer < 0) {
                     clearInterval(interval);
                     setGameCompleted(true)
-                    PlayMusic(GameOver)
-                    setTimerStatus(false)
+                    setTimerStatus(true)
+                    setStart(false)
+                    if (gameCompleted == false) {
+                        PlayMusic(GameOver)
+                        setTimerStatus(true)
+                    }
                 }
             }, 1000);
             return () => clearInterval(interval); // Cleanup interval on component unmount
         }
-        if (timerStatus) {
+        if (!timerStatus) {
             TimerFn()
         }
-    }, [timerStatus]);
+    }, [timerStatus, gameCompleted]);
 
     return (
         <div>
