@@ -19,7 +19,7 @@ const Dashboard = ({
     signIn(item);
   };
   return (
-    <div className="w-full h-[100vh] relative flex justify-center items-center bg-gradient-to-r w-full from-cyan-500 to-blue-500 h-[100vh]">
+    <div className="relative flex justify-center items-center bg-gradient-to-r w-full from-cyan-500 to-blue-500 h-[100vh]">
       {session ? (
         <>
           <Welcome Play={Play} setSwitchPage={setSwitchPage} />
