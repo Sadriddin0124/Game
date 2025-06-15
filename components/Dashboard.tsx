@@ -19,20 +19,20 @@ const Dashboard = ({
     signIn(item);
   };
   return (
-    <div className="w-full h-[100vh] relative flex justify-center items-center">
+    <div className="w-full h-[100vh] relative flex justify-center items-center bg-gradient-to-r w-full from-cyan-500 to-blue-500 h-[100vh]">
       {session ? (
         <>
           <Welcome Play={Play} setSwitchPage={setSwitchPage} />
         </>
       ) : (
-        <div>
-          <Image
+        <div className="">
+          {/* <Image
             src={AuthImage}
             alt="AuthImage"
             width={1000}
             height={1000}
             className="w-full h-full absolute object-cover top-0 left-0"
-          />
+          /> */}
           <div className="flex mx-2 flex-col py-14 px-12 gap-10 items-center duration-75 text-center ease-linear rounded-md hover:border-[#ffffff57] backdrop-blur-md hover:bg-[#ffffff57] border-transparent border bg-[#ffffff3e]">
             <h1 className="text-3xl text-white font-bold">
               You are not logged in

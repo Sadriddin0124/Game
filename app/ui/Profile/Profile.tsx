@@ -8,6 +8,9 @@ const Profile = () => {
   const { data: session } = useSession();
   const name = String(session?.user?.name);
   const image = String(session?.user?.image);
+
+  console.log(session);
+  
   return (
     <>
       {name !== "undefined" ? (
