@@ -1,5 +1,5 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+// next.config.mjs
+export default {
   images: {
     remotePatterns: [
       {
@@ -9,9 +9,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
-      }
+      },
     ],
   },
 };
-
-module.exports = nextConfig;
