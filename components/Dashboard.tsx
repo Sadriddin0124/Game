@@ -3,7 +3,7 @@ import Welcome from "@/app/ui/Welcome/Welcome";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { Dispatch, SetStateAction } from "react";
-import AuthImage from "@/assets/auth.jpg";
+// import AuthImage from "@/assets/auth.jpg";
 import Google from "@/assets/google.webp";
 import Github from "@/assets/github.png";
 
